@@ -2,7 +2,7 @@
 
 use std::collections::{HashMap, HashSet, VecDeque};
 use std::fs::File;
-use std::io::Read;
+use std::io::{Read, Write};
 use std::iter::Map;
 use std::ops::Range;
 use std::simd::u64x4;
@@ -107,8 +107,10 @@ fn verify(links: &Vec<(&Node, &Node)>, sol_path: &str, show: bool) {
 }
 
 fn display(links: &Vec<(&Node, &Node)>) {
+    let mut f = File::create("correct_sol.txt").unwrap();
+
     for &link in links {
-        println!("{}", render(link))
+        f.write_all(format!("{}\n", render(link)).as_bytes()).unwrap();
     }
 }
 
@@ -217,7 +219,7 @@ fn construct_and_verify(name: &str, prob: &str, sol: &str) {
 
     verify(&links, sol, false);
     println!(" +  Verification took {} sec", curr.elapsed().as_secs_f32());
-    // display(&links);
+    display(&links);
 }
 
 fn main() {
