@@ -223,7 +223,7 @@ fn construct_and_verify(name: &str, prob: &str, sol: &str) {
             continue
         }
 
-        let this_links = pool_compute(graph.level(count).iter(), 5, |node: &Node| {
+        let this_links = pool_compute(graph.level(count).iter(), 20, |node: &Node| {
             let mut linked: Vec<&Node> = Vec::new();
             let mut ret = Vec::new();
             for c in graph.levels_above(count) {
