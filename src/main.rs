@@ -10,28 +10,28 @@ use std::time::Instant;
 // type SIMDType = u64x4;
 // const SIMD_SIZE: usize = 256;
 // const LANE_SIZE: usize = 64;
-// const ITEMS: usize = 3;
+// const SIMD_COUNT: usize = 3;
 
 // use std::simd::u64x8;
 // type SIMDType = u64x8;
 // const SIMD_SIZE: usize = 512;
 // const LANE_SIZE: usize = 64;
-// const ITEMS: usize = 2;
+// const SIMD_COUNT: usize = 2;
 
 use std::simd::u8x32;
 type SIMDType = u8x32;
 const SIMD_SIZE: usize = 256;
 const LANE_SIZE: usize = 8;
-const ITEMS: usize = 3;
+const SIMD_COUNT: usize = 3;
 
 // use std::simd::u8x16;
 // type SIMDType = u8x16;
 // const SIMD_SIZE: usize = 128;
 // const LANE_SIZE: usize = 8;
-// const ITEMS: usize = 6;
+// const SIMD_COUNT: usize = 6;
 
 struct Set {
-    items: [SIMDType; ITEMS],
+    items: [SIMDType; SIMD_COUNT],
     count: usize
 }
 
@@ -50,7 +50,7 @@ impl Set {
     }
 
     fn is_subset(&self, other: &Set) -> bool {
-        (0..ITEMS).all(|i| self.items[i] & other.items[i] == self.items[i])
+        (0..SIMD_COUNT).all(|i| self.items[i] & other.items[i] == self.items[i])
     }
 }
 
@@ -205,7 +205,7 @@ fn construct_and_verify(name: &str, prob: &str, sol: &str) {
 
         graph.insert_node(Node::new(line.replace(" ", ", "),set));
     }
-    if int_map.len() > SIMD_SIZE * ITEMS {
+    if int_map.len() > SIMD_SIZE * SIMD_COUNT {
         panic!("Bit Set not large enough ({} bits needed)", int_map.len());
     }
 
