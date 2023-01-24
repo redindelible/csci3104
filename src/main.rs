@@ -1,5 +1,7 @@
 #![feature(portable_simd)]
 
+mod pool_compute;
+
 use std::collections::{HashMap, HashSet};
 use std::fs::File;
 use std::io::{Read, Write};
@@ -19,6 +21,8 @@ use std::time::Instant;
 // const SIMD_COUNT: usize = 2;
 
 use std::simd::u8x32;
+use crate::pool_compute::pool_compute;
+
 type SIMDType = u8x32;
 const SIMD_SIZE: usize = 256;
 const LANE_SIZE: usize = 8;
@@ -219,20 +223,24 @@ fn construct_and_verify(name: &str, prob: &str, sol: &str) {
             continue
         }
 
-        for node in graph.level(count) {
+        let this_links = pool_compute(graph.level(count).iter(), 5, |node: &Node| {
             let mut linked: Vec<&Node> = Vec::new();
+            let mut ret = Vec::new();
             for c in graph.levels_above(count) {
                 let node_group = graph.level(c);
                 for other_node in node_group {
                     if node.is_subset(&other_node) {
                         if !linked.iter().any(|&linked_node| linked_node.is_subset(&other_node)) {
-                            links.push((node, other_node));
+                            ret.push((node, other_node));
                             linked.push(other_node)
                         }
                     }
                 }
-            }
-        }
+            };
+            ret
+        });
+
+        links.extend(this_links.iter().flatten());
     }
 
     println!(" +  Constructing links took {} sec", curr.elapsed().as_secs_f32());
