@@ -7,10 +7,13 @@ use std::ops::Range;
 use std::simd::u64x4;
 use std::time::Instant;
 
+type SIMDType = u64x4;
+const SIMD_SIZE: usize = 256;
+const LANE_SIZE: usize = 64;
 const ITEMS: usize = 3;
 
 struct Set {
-    items: [u64x4; ITEMS],
+    items: [SIMDType; ITEMS],
     count: usize
 }
 
@@ -22,9 +25,9 @@ impl Set {
     }
 
     fn mark(&mut self, idx: u16) {
-        let which = idx / 256;
-        let idx = (idx as usize) % 256;
-        self.items[which as usize].as_mut_array()[(idx as usize) / 64] |= 1 << ((idx as usize) % 64);
+        let which = (idx as usize)/ SIMD_SIZE;
+        let idx = (idx as usize) % SIMD_SIZE;
+        self.items[which].as_mut_array()[(idx as usize) / LANE_SIZE] |= 1 << ((idx as usize) % LANE_SIZE);
         self.count += 1;
     }
 
@@ -137,7 +140,6 @@ impl<'a> Graph<'a> {
             data, level_count: 0
         }
     }
-
     fn insert_node(&mut self, node: Node) {
         if node.count() >= self.level_count {
             self.data.nodes.extend((self.level_count..=node.count()).map(|_| Vec::new()));
@@ -215,7 +217,7 @@ fn construct_and_verify(name: &str, prob: &str, sol: &str) {
     println!(" +  Total Algorithm took {} sec", start.elapsed().as_secs_f32());
     let curr = Instant::now();
 
-    // verify(&links, sol, false);
+    verify(&links, sol, true);
     println!(" +  Verification took {} sec", curr.elapsed().as_secs_f32());
     // display(&links);
 }
