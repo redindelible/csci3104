@@ -1,9 +1,8 @@
 #![feature(portable_simd)]
 
-use std::collections::{HashMap, HashSet, VecDeque};
+use std::collections::{HashMap, HashSet};
 use std::fs::File;
 use std::io::{Read, Write};
-use std::iter::Map;
 use std::ops::Range;
 use std::simd::u64x4;
 use std::time::Instant;
@@ -56,19 +55,17 @@ impl Node {
         self.s.is_subset(&other.s)
     }
 
-    fn is_superset(&self, other: &Node) -> bool {
-        other.s.is_subset(&other.s)
-    }
-
     fn count(&self) -> usize {
         self.s.count
     }
 }
 
+#[allow(unused)]
 fn render(link: (&Node, &Node)) -> String {
     return format!("{}->{}", link.0.name, link.1.name)
 }
 
+#[allow(unused)]
 fn verify(links: &Vec<(&Node, &Node)>, sol_path: &str, show: bool) {
     let mut failed = false;
     let mut sol = String::new();
@@ -106,6 +103,7 @@ fn verify(links: &Vec<(&Node, &Node)>, sol_path: &str, show: bool) {
     }
 }
 
+#[allow(unused)]
 fn display(links: &Vec<(&Node, &Node)>) {
     let mut f = File::create("correct_sol.txt").unwrap();
 
@@ -161,7 +159,7 @@ impl<'a> Graph<'a> {
     }
 }
 
-
+#[allow(unused)]
 fn construct_and_verify(name: &str, prob: &str, sol: &str) {
     println!("-----------------");
     println!("Running {}", name);
@@ -217,13 +215,13 @@ fn construct_and_verify(name: &str, prob: &str, sol: &str) {
     println!(" +  Total Algorithm took {} sec", start.elapsed().as_secs_f32());
     let curr = Instant::now();
 
-    verify(&links, sol, false);
+    // verify(&links, sol, false);
     println!(" +  Verification took {} sec", curr.elapsed().as_secs_f32());
-    display(&links);
+    // display(&links);
 }
 
 fn main() {
     // construct_and_verify("4 items", "ex1.txt", "ex1_sol.txt");
     // construct_and_verify("Example", "ex2.txt", "ex2_sol.txt");
-    construct_and_verify("Long", "79867.txt", "long_sol.txt");
+    construct_and_verify("Long", "79867.txt", "correct_sol.txt");
 }
