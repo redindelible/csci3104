@@ -4,13 +4,31 @@ use std::collections::{HashMap, HashSet};
 use std::fs::File;
 use std::io::{Read, Write};
 use std::ops::Range;
-use std::simd::u64x4;
 use std::time::Instant;
 
-type SIMDType = u64x4;
+// use std::simd::u64x4;
+// type SIMDType = u64x4;
+// const SIMD_SIZE: usize = 256;
+// const LANE_SIZE: usize = 64;
+// const ITEMS: usize = 3;
+
+// use std::simd::u64x8;
+// type SIMDType = u64x8;
+// const SIMD_SIZE: usize = 512;
+// const LANE_SIZE: usize = 64;
+// const ITEMS: usize = 2;
+
+use std::simd::u8x32;
+type SIMDType = u8x32;
 const SIMD_SIZE: usize = 256;
-const LANE_SIZE: usize = 64;
+const LANE_SIZE: usize = 8;
 const ITEMS: usize = 3;
+
+// use std::simd::u8x16;
+// type SIMDType = u8x16;
+// const SIMD_SIZE: usize = 128;
+// const LANE_SIZE: usize = 8;
+// const ITEMS: usize = 6;
 
 struct Set {
     items: [SIMDType; ITEMS],
@@ -187,6 +205,10 @@ fn construct_and_verify(name: &str, prob: &str, sol: &str) {
 
         graph.insert_node(Node::new(line.replace(" ", ", "),set));
     }
+    if int_map.len() > SIMD_SIZE * ITEMS {
+        panic!("Bit Set not large enough ({} bits needed)", int_map.len());
+    }
+
     println!(" +  Constructing sets took {} sec", curr.elapsed().as_secs_f32());
     let curr = Instant::now();
 
